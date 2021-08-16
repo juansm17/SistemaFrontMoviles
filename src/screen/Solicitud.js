@@ -107,6 +107,18 @@ const Solicitud = ({ navigation }) => {
         </View>
         <Text style={solicitudStyles.title}>Ingresar Solicitud</Text>
         <View>
+        <View style={solicitudStyles.section}>
+           
+            <TextInput
+              placeholder="Fecha"
+              blurOnSubmit={false}
+              style={solicitudStyles.textInput}
+              keyboardType="numeric"
+              autoFocus
+              onChangeText={(fecha) => setUser({ ...solicitud, fecha: fecha })}
+              onSubmitEditing={() => emailInput.focus()}
+            />
+          </View>
           <View style={solicitudStyles.section}>
          
           <RNPickerSelect 
@@ -117,7 +129,7 @@ const Solicitud = ({ navigation }) => {
                 {label:'Certificado',value:'certificado'}
                
             ]}
-        />
+                  />
           </View>
           
          
@@ -128,6 +140,7 @@ const Solicitud = ({ navigation }) => {
              blurOnSubmit={false}
              style={solicitudStyles.textInput}
              autoFocus
+             onChangeText={(descripcion) => setSolicitud({ ...solicitud, descripcion: descripcion })}
            />
             
           </View>
