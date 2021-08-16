@@ -15,6 +15,7 @@ import {
   Keyboard,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNPickerSelect from 'react-native-picker-select';
 
 import { Icon } from 'react-native-elements';
 
@@ -25,6 +26,7 @@ import { signUpStyles } from '../styles/signUp';
 import MainButton from '../components/MainButton';
 import Colors from '../constants/color';
 
+
 const SignUp = ({ navigation }) => {
   const [user, setUser] = useState({
     email: '',
@@ -33,6 +35,7 @@ const SignUp = ({ navigation }) => {
     confirmPassword: '',
   });
   const [loading, setLoading] = useState(false);
+  const perfil = ["Estudiante", "Control de Estudio"]
 
   let passInput = '';
   let pass2Input = '';
@@ -125,7 +128,7 @@ const SignUp = ({ navigation }) => {
           <View style={signUpStyles.section}>
             <Icon name="wallet-outline" color="gray" type="ionicon" size={20} />
             <TextInput
-            ref={(input)=>(ciInput=input)}
+           // ref={(input)=>(ciInput=input)}
               placeholder="CI"
               blurOnSubmit={false}
               style={signUpStyles.textInput}
@@ -134,22 +137,20 @@ const SignUp = ({ navigation }) => {
               onSubmitEditing={() => ciInput.focus()}
             />
           </View>
-          <View style={signUpStyles.section}>
-            <Icon name="person-outline" color="gray" type="ionicon" size={20} />
-            <TextInput
-            ref={(input)=>(perfilInput=input)}
-              placeholder="Perfil"
-              blurOnSubmit={false}
-              style={signUpStyles.textInput}
-              autoFocus
-              onChangeText={(perfil) => setUser({ ...user, perfil:perfil })}
-              onSubmitEditing={() => perfilInput.focus()}
-            />
+          <View style={signUpStyles.section} >
+          <RNPickerSelect 
+            onValueChange={(value) => console.log(value)}
+            items={[
+                { label: 'Estudiante', value: 'estudiante' },
+                { label: 'Control de Estudio', value: 'control de estudio' },
+               
+            ]}
+        />
           </View>
           <View style={signUpStyles.section}>
             <Icon name="mail-outline" color="gray" type="ionicon" size={20} />
             <TextInput
-              ref={(input) => (perfilInput = input)}
+            //  ref={(input) => (perfilInput = input)}
               placeholder="Email"
               autoCapitalize="none"
               keyboardType={'email-address'}
@@ -167,7 +168,7 @@ const SignUp = ({ navigation }) => {
               size={20}
             />
             <TextInput
-              ref={(input) => (passInput = input)}
+            //  ref={(input) => (passInput = input)}
               placeholder="Password"
               autoCapitalize="none"
               blurOnSubmit={false}
@@ -187,7 +188,7 @@ const SignUp = ({ navigation }) => {
               size={20}
             />
             <TextInput
-              ref={(input) => (pass2Input = input)}
+             // ref={(input) => (pass2Input = input)}
               placeholder="Confirm Password"
               autoCapitalize="none"
               blurOnSubmit={false}
@@ -200,10 +201,10 @@ const SignUp = ({ navigation }) => {
             />
           </View>
         </View>
-
-        <MainButton onPress={() => submitSignUp()}>Buscar</MainButton>
-        <MainButton onPress={() => submitSignUp()}>Guardar</MainButton>
-        <MainButton onPress={() => submitSignUp()}>Eliminar</MainButton>
+          <View style={styles.button}>
+        <MainButton   onPress={() => submitSignUp()}>Buscar</MainButton>
+        <MainButton styels={styles.button} >Guardar</MainButton>
+        <MainButton onPress>Eliminar</MainButton>
         {/* <TouchableOpacity
           onPress={() => submitSignUp()}
           style={signUpStyles.signIn}
@@ -214,8 +215,9 @@ const SignUp = ({ navigation }) => {
             <Text style={signUpStyles.textSignIn}>Sign Up</Text>
           )}
         </TouchableOpacity> */}
+        </View>
         <View style={signUpStyles.signUp}>
-          <Text style={signUpStyles.textSignUp}>Already have an account?</Text>
+          <Text style={signUpStyles.textSignUp}>Ya tiene cuenta ?</Text>
           <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
             <Text
               style={[
@@ -223,7 +225,7 @@ const SignUp = ({ navigation }) => {
                 { color: Colors.quinary, marginLeft: 3 },
               ]}
             >
-              Sign In
+              Ingresar
             </Text>
           </TouchableOpacity>
         </View>
@@ -250,6 +252,14 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+  },
+  button:{
+   width:'100',
+   flexDirection: "row",
+    justifyContent: 'space-around',
+    alignItems:'center',
+    justifyContent:"center"
+
   },
 });
 

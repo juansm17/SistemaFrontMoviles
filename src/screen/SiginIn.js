@@ -103,7 +103,7 @@ const SignIn = ({ navigation }) => {
               size={20}
             />
             <TextInput
-              ref={(input) => (emailInput = input)}
+            //  ref={(input) => (emailInput = input)}
               placeholder="email"
               autoCapitalize="none"
               keyboardType={'email-address'}
@@ -124,7 +124,7 @@ const SignIn = ({ navigation }) => {
               size={20}
             />
             <TextInput
-              ref={(input) => (emailInput = input)}
+              //ref={(input) => (emailInput = input)}
               placeholder="password"
               autoCapitalize="none"
               style={signInStyles.textInput}
