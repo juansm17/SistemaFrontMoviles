@@ -134,7 +134,7 @@ const SignUp = ({ navigation }) => {
               style={signUpStyles.textInput}
               autoFocus
               onChangeText={(ci) => setUser({ ...user, ci:ci })}
-              onSubmitEditing={() => ciInput.focus()}
+              onSubmitEditing={() => passInput.focus()}
             />
           </View>
           <View style={signUpStyles.section} >

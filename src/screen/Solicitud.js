@@ -36,7 +36,8 @@ const Solicitud = ({ navigation }) => {
   });
   const [loading, setLoading] = useState(false);
   
-
+  let passInput = '';
+  let emailInput = '';
   
 
   const submitSolicitud = async () => {
@@ -141,6 +142,7 @@ const Solicitud = ({ navigation }) => {
              style={solicitudStyles.textInput}
              autoFocus
              onChangeText={(descripcion) => setSolicitud({ ...solicitud, descripcion: descripcion })}
+             onSubmitEditing={() => passInput.focus()}
            />
             
           </View>
