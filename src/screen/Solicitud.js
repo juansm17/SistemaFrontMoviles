@@ -13,38 +13,36 @@ import {
   TouchableWithoutFeedback,
   StyleSheet,
   Keyboard,
+  Button
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNPickerSelect from 'react-native-picker-select';
-
-
 
 import Field from '../services/Field';
 import Http from '../services/Http';
 
 import { solicitudStyles } from '../styles/Solicitud'
 import MainButton from '../components/MainButton';
+import Loading from '../components/Loading';
 
 import Colors from '../constants/color';
+import axios from 'axios';
 
 
 const Solicitud = ({ navigation }) => {
-  const [solicitud, setSolicitud] = useState({
-   tipo_documento:'',
-   descripcion:'',
-   fecha:''
-  });
+  const [documentType, setDocumentType] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [idUser, setIdUser] = React.useState('');
   const [loading, setLoading] = useState(false);
-  
+
   let passInput = '';
   let emailInput = '';
-  
 
   const submitSolicitud = async () => {
     setLoading(true);
     if (
       !Field.checkFields([
-      
+
       ])
     ) {
       Alert.alert('Empty Field', 'Please, fill the fields');
@@ -60,8 +58,8 @@ const Solicitud = ({ navigation }) => {
               'user',
               JSON.stringify({
                 tipo_documento: solicitud.tipo_documento,
-                descripcion:solicitud.descripcion,
-                fecha:solicitud.fecha,
+                descripcion: solicitud.descripcion,
+                fecha: solicitud.fecha,
                 id: data.body.id,
               })
             );
@@ -92,79 +90,76 @@ const Solicitud = ({ navigation }) => {
     setLoading(false);
   };
 
+  const getUser = async () => {
+    return await AsyncStorage.getItem('user');
+  }
+
+  useEffect(() => {
+    getUser().then(res => setIdUser(JSON.parse(res).id_person));
+  }, []);
+
+  const createRequest = async () => {
+    try {
+      setLoading(true);
+      await axios.post('https://tesis-app-server.herokuapp.com/request', {
+        documentType,
+        description,
+        idUser,
+      });
+      setDocumentType('');
+      setDescription('');
+      setTimeout(() => {
+        setLoading(false)
+      }, 1000);
+    } catch (e) {
+      console.log(e.response.data.error);
+    }
+  }
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
         Keyboard.dismiss();
       }}
     >
-        <ScrollView>
-      <View style={solicitudStyles.container}>
-        <View style={styles.imageContainer}>
-          <Image
-            style={styles.image}
-            source={require('../../assets/logo.jpg')}
-          />
-        </View>
-        <Text style={solicitudStyles.title}>Ingresar Solicitud</Text>
-        <View>
-        <View style={solicitudStyles.section}>
-           
-            <TextInput
-              placeholder="Fecha"
-              blurOnSubmit={false}
-              style={solicitudStyles.textInput}
-              keyboardType="numeric"
-              autoFocus
-              onChangeText={(fecha) => setUser({ ...solicitud, fecha: fecha })}
-              onSubmitEditing={() => emailInput.focus()}
+      <ScrollView>
+        <View style={solicitudStyles.container}>
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={require('../../assets/logo.jpg')}
             />
           </View>
-          <View style={solicitudStyles.section}>
-         
-          <RNPickerSelect 
-            onValueChange={(value) => console.log(value)}
-            items={[
-                { label: 'Constancia', value: 'constancia' },
-                { label: 'Expediente', value: 'expediente' },
-                {label:'Certificado',value:'certificado'}
-               
-            ]}
-                  />
+          <Text style={solicitudStyles.title}>Ingresar Solicitud</Text>
+          <View>
+            <View style={solicitudStyles.section}>
+              <RNPickerSelect
+                onValueChange={(v) => setDocumentType(v)}
+                items={[
+                  { label: 'CONSTANCIA', value: 'CONSTANCIA' },
+                  { label: 'CERTIFICADO', value: 'CERTIFICADO' }
+                ]}
+              />
+            </View>
+            <View style={solicitudStyles.section}>
+              <TextInput style={solicitudStyles.textAreaContainer}
+                placeholder="Descripción"
+                blurOnSubmit={false}
+                style={solicitudStyles.textInput}
+                autoFocus
+                value={description}
+                onChangeText={(v) => setDescription(v)}
+              />
+            </View>
           </View>
-          
-         
-          <View style={solicitudStyles.section}>
-           
-            <TextInput style={solicitudStyles.textAreaContainer}
-             placeholder="Description"
-             blurOnSubmit={false}
-             style={solicitudStyles.textInput}
-             autoFocus
-             onChangeText={(descripcion) => setSolicitud({ ...solicitud, descripcion: descripcion })}
-             onSubmitEditing={() => passInput.focus()}
-           />
-            
+          <View>
+            {
+              loading &&
+              <Loading />
+            }
+            <Button onPress={createRequest} title='Enviar solicitud' />
           </View>
-         
-         
         </View>
-          <View >
-        <MainButton   onPress={() => submitSolicitud()}>Enviar</MainButton>
-      
-        {/* <TouchableOpacity
-          onPress={() => submitSignUp()}
-          style={signUpStyles.signIn}
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color="#00ff00" />
-          ) : (
-            <Text style={signUpStyles.textSignIn}>Sign Up</Text>
-          )}
-        </TouchableOpacity> */}
-        </View>
-     
-      </View>
       </ScrollView>
     </TouchableWithoutFeedback>
   );
@@ -188,12 +183,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: '100%',
   },
-  button:{
-   width:'100',
-   flexDirection: "row",
+  button: {
+    width: '100',
+    flexDirection: "row",
     justifyContent: 'space-around',
-    alignItems:'center',
-    justifyContent:"center"
+    alignItems: 'center',
+    justifyContent: "center"
 
   },
 });

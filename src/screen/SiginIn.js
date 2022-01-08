@@ -15,7 +15,7 @@ import {
   Keyboard,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Loading from '../components/Loading';
 import { Icon } from 'react-native-elements';
 
 import Field from '../services/Field';
@@ -24,16 +24,17 @@ import Http from '../services/Http';
 import { signInStyles } from '../styles/signIn';
 import Colors from '../constants/color';
 import MainButton from '../components/MainButton';
+import axios from 'axios';
 
 const SignIn = ({ navigation }) => {
-  const [user, setUser] = useState({ email: '', password: '',nombre:'' });
+  const [document, setDocument] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [loading, setLoading] = useState(false);
-
-  let passInput = '';
 
   const submitSignIn = async () => {
     setLoading(true);
-    if (!Field.checkFields([user.email, user.password,user.nombre])) {
+    if (!Field.checkFields([user.email, user.password, user.nombre])) {
       Alert.alert('Empty Field', 'Please, fill the fields');
     } else {
       const data = await Http.send('POST', '/api/users/signin', user);
@@ -67,6 +68,29 @@ const SignIn = ({ navigation }) => {
     setLoading(false);
   };
 
+  const signIn = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.post('https://tesis-app-server.herokuapp.com/auth/signin', {
+        document,
+        email,
+        key: password,
+      });
+      setDocument('');
+      setEmail('');
+      setPassword('');
+      await AsyncStorage.setItem('token', res.data.token);
+      await AsyncStorage.setItem('user', JSON.stringify(res.data.user));
+      setTimeout(() => {
+        setLoading(false);
+        navigation.navigate('Solicitud');
+      }, 1000);
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
@@ -84,37 +108,31 @@ const SignIn = ({ navigation }) => {
         <Text style={signInStyles.subtitle}>Bienvendido a  SDGPE!</Text>
         <View>
           <View style={signInStyles.section}>
-            <Icon name="at-outline" color="gray" type="ionicon" size={20} />
+            <Icon name="wallet-outline" color="gray" type="ionicon" size={20} />
             <TextInput
-              placeholder=" Nombre"
+              placeholder="Cédula de identidad"
               autoCapitalize="none"
               blurOnSubmit={false}
               style={signInStyles.textInput}
               autoFocus
-              onChangeText={(name) => setUser({ ...user, name: name })}
-              onSubmitEditing={() => emailInput.focus()}
+              value={document}
+              onChangeText={(v) => setDocument(v)}
+              onSubmitEditing={() => document.focus()}
             />
           </View>
           <View style={signInStyles.section}>
-            <Icon
-              name="mail-outline"
-              color="gray"
-              type="ionicon"
-              size={20}
-            />
+            <Icon name="mail-outline" color="gray" type="ionicon" size={20} />
             <TextInput
-            //  ref={(input) => (emailInput = input)}
-              placeholder="email"
+              //  ref={(input) => (perfilInput = input)}
+              placeholder="Email"
               autoCapitalize="none"
               keyboardType={'email-address'}
+              blurOnSubmit={false}
               style={signInStyles.textInput}
-              secureTextEntry
-              onChangeText={(password) =>
-                setUser({ ...user, password: password })
-              }
-              onSubmitEditing={()=>passInput.focus()}
+              value={email}
+              onChangeText={(v) => setEmail(v)}
+              onSubmitEditing={() => email.focus()}
             />
-            
           </View>
           <View style={signInStyles.section}>
             <Icon
@@ -129,16 +147,18 @@ const SignIn = ({ navigation }) => {
               autoCapitalize="none"
               style={signInStyles.textInput}
               secureTextEntry
-              onChangeText={(password) =>
-                setUser({ ...user, password: password })
-              }
-              onSubmitEditing={()=>passInput.focus()}
+              value={password}
+              onChangeText={(v) => setPassword(v)}
             />
-            
           </View>
         </View>
 
-        <MainButton onPress={submitSignIn}>Sign In</MainButton>
+        {
+          loading &&
+          <Loading />
+        }
+
+        <MainButton onPress={signIn}>Iniciar sesión</MainButton>
         {/* <TouchableOpacity onPress={submitSignIn} style={signInStyles.signIn}>
           {loading ? (
             <ActivityIndicator size="small" color="#00ff00" />

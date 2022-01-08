@@ -13,6 +13,8 @@ import {
   TouchableWithoutFeedback,
   StyleSheet,
   Keyboard,
+  Pressable,
+  Button
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNPickerSelect from 'react-native-picker-select';
@@ -21,21 +23,20 @@ import { Icon } from 'react-native-elements';
 
 import Field from '../services/Field';
 import Http from '../services/Http';
+import Loading from '../components/Loading';
 
 import { signUpStyles } from '../styles/signUp';
 import MainButton from '../components/MainButton';
 import Colors from '../constants/color';
-
+import axios from 'axios';
 
 const SignUp = ({ navigation }) => {
-  const [user, setUser] = useState({
-    email: '',
-    password: '',
-    name: '',
-    confirmPassword: '',
-  });
+  const [name, setName] = useState('');
+  const [document, setDocument] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const perfil = ["Estudiante", "Control de Estudio"]
+  const [admin, setAdmin] = useState(false);
 
   let passInput = '';
   let pass2Input = '';
@@ -97,139 +98,136 @@ const SignUp = ({ navigation }) => {
     setLoading(false);
   };
 
+  const signUp = async () => {
+    try {
+      setLoading(true);
+      const res = await axios.post('https://tesis-app-server.herokuapp.com/auth/signup', {
+        name,
+        document,
+        email,
+        key: password,
+        admin
+      });
+      setName('');
+      setDocument('');
+      setEmail('');
+      setPassword('');
+      setAdmin('');
+      console.log(res.data.message);
+      setTimeout(() => {
+        setLoading(false);
+        navigation.navigate('SignIn');
+      }, 1000);
+    } catch (e) {
+      console.log(e.response.data.error);
+    }
+  };
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {
         Keyboard.dismiss();
       }}
     >
-        <ScrollView>
-      <View style={signUpStyles.container}>
-        <View style={styles.imageContainer}>
-          <Image
-            style={styles.image}
-            source={require('../../assets/logo.jpg')}
-          />
+      <ScrollView>
+        <View style={signUpStyles.container}>
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={require('../../assets/logo.jpg')}
+            />
+          </View>
+          <Text style={signUpStyles.title}>Ingresar</Text>
+          <Text style={signUpStyles.subtitle}>Bienvendido a  SDGPE!</Text>
+          <View>
+            <View style={signUpStyles.section}>
+              <Icon name="person-outline" color="gray" type="ionicon" size={20} />
+              <TextInput
+                placeholder="Name"
+                blurOnSubmit={false}
+                style={signUpStyles.textInput}
+                autoFocus
+                value={name}
+                onChangeText={(v) => setName(v)}
+                onSubmitEditing={() => emailInput.focus()}
+              />
+            </View>
+            <View style={signUpStyles.section}>
+              <Icon name="wallet-outline" color="gray" type="ionicon" size={20} />
+              <TextInput
+                // ref={(input)=>(ciInput=input)}
+                placeholder="Cédula de identidad"
+                blurOnSubmit={false}
+                style={signUpStyles.textInput}
+                autoFocus
+                value={document}
+                onChangeText={(v) => setDocument(v)}
+                onSubmitEditing={() => passInput.focus()}
+              />
+            </View>
+            <View style={signUpStyles.section}>
+              <Icon name="mail-outline" color="gray" type="ionicon" size={20} />
+              <TextInput
+                //  ref={(input) => (perfilInput = input)}
+                placeholder="Email"
+                autoCapitalize="none"
+                keyboardType={'email-address'}
+                blurOnSubmit={false}
+                style={signUpStyles.textInput}
+                value={email}
+                onChangeText={(v) => setEmail(v)}
+                onSubmitEditing={() => passInput.focus()}
+              />
+            </View>
+            <View style={signUpStyles.section}>
+              <Icon
+                name="lock-closed-outline"
+                color="gray"
+                type="ionicon"
+                size={20}
+              />
+              <TextInput
+                //  ref={(input) => (passInput = input)}
+                placeholder="Password"
+                autoCapitalize="none"
+                blurOnSubmit={false}
+                style={signUpStyles.textInput}
+                secureTextEntry
+                value={password}
+                onChangeText={(v) => setPassword(v)}
+                onSubmitEditing={() => pass2Input.focus()}
+              />
+            </View>
+            <View style={signUpStyles.section}>
+              <RNPickerSelect
+                value={admin}
+                onValueChange={(value) => setAdmin(value)}
+                items={[
+                  { label: 'Estudiante', value: false },
+                  { label: 'Control de Estudio', value: true },
+                ]}
+              />
+            </View>
+          </View>
+          {
+            loading &&
+            <Loading />
+          }
+          <Button styles={styles.button} title='Ingresar' onPress={signUp} />
+          <View style={signUpStyles.signUp}>
+            <Text style={signUpStyles.textSignUp}>Ya tiene cuenta?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
+              <Text
+                style={[
+                  signUpStyles.textSignUp,
+                  { color: Colors.quinary, marginLeft: 3 },
+                ]}
+              >
+                Iniciar sesión
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <Text style={signUpStyles.title}>Ingresar</Text>
-        <Text style={signUpStyles.subtitle}>Bienvendido a  SDGPE!</Text>
-        <View>
-          <View style={signUpStyles.section}>
-            <Icon name="person-outline" color="gray" type="ionicon" size={20} />
-            <TextInput
-              placeholder="Name"
-              blurOnSubmit={false}
-              style={signUpStyles.textInput}
-              autoFocus
-              onChangeText={(name) => setUser({ ...user, name: name })}
-              onSubmitEditing={() => emailInput.focus()}
-            />
-          </View>
-          <View style={signUpStyles.section}>
-            <Icon name="wallet-outline" color="gray" type="ionicon" size={20} />
-            <TextInput
-           // ref={(input)=>(ciInput=input)}
-              placeholder="CI"
-              blurOnSubmit={false}
-              style={signUpStyles.textInput}
-              autoFocus
-              onChangeText={(ci) => setUser({ ...user, ci:ci })}
-              onSubmitEditing={() => passInput.focus()}
-            />
-          </View>
-          <View style={signUpStyles.section} >
-          <RNPickerSelect 
-            onValueChange={(value) => console.log(value)}
-            items={[
-                { label: 'Estudiante', value: 'estudiante' },
-                { label: 'Control de Estudio', value: 'control de estudio' },
-               
-            ]}
-        />
-          </View>
-          <View style={signUpStyles.section}>
-            <Icon name="mail-outline" color="gray" type="ionicon" size={20} />
-            <TextInput
-            //  ref={(input) => (perfilInput = input)}
-              placeholder="Email"
-              autoCapitalize="none"
-              keyboardType={'email-address'}
-              blurOnSubmit={false}
-              style={signUpStyles.textInput}
-              onChangeText={(email) => setUser({ ...user, email: email })}
-              onSubmitEditing={() => passInput.focus()}
-            />
-          </View>
-          <View style={signUpStyles.section}>
-            <Icon
-              name="lock-closed-outline"
-              color="gray"
-              type="ionicon"
-              size={20}
-            />
-            <TextInput
-            //  ref={(input) => (passInput = input)}
-              placeholder="Password"
-              autoCapitalize="none"
-              blurOnSubmit={false}
-              style={signUpStyles.textInput}
-              secureTextEntry
-              onChangeText={(password) =>
-                setUser({ ...user, password: password })
-              }
-              onSubmitEditing={() => pass2Input.focus()}
-            />
-          </View>
-          <View style={signUpStyles.section}>
-            <Icon
-              name="lock-closed-outline"
-              color="gray"
-              type="ionicon"
-              size={20}
-            />
-            <TextInput
-             // ref={(input) => (pass2Input = input)}
-              placeholder="Confirm Password"
-              autoCapitalize="none"
-              blurOnSubmit={false}
-              style={signUpStyles.textInput}
-              secureTextEntry
-              onChangeText={(password) =>
-                setUser({ ...user, confirmPassword: password })
-              }
-              onSubmitEditing={() => submitSignUp()}
-            />
-          </View>
-        </View>
-          <View style={styles.button}>
-        <MainButton   onPress={() => submitSignUp()}>Buscar</MainButton>
-        <MainButton styels={styles.button} >Guardar</MainButton>
-        <MainButton onPress>Eliminar</MainButton>
-        {/* <TouchableOpacity
-          onPress={() => submitSignUp()}
-          style={signUpStyles.signIn}
-        >
-          {loading ? (
-            <ActivityIndicator size="small" color="#00ff00" />
-          ) : (
-            <Text style={signUpStyles.textSignIn}>Sign Up</Text>
-          )}
-        </TouchableOpacity> */}
-        </View>
-        <View style={signUpStyles.signUp}>
-          <Text style={signUpStyles.textSignUp}>Ya tiene cuenta ?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignIn')}>
-            <Text
-              style={[
-                signUpStyles.textSignUp,
-                { color: Colors.quinary, marginLeft: 3 },
-              ]}
-            >
-              Ingresar
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
       </ScrollView>
     </TouchableWithoutFeedback>
   );
@@ -237,7 +235,7 @@ const SignUp = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   imageContainer: {
-    flexDirection: 'row',
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     width: Dimensions.get('window').width * 0.5,
@@ -246,19 +244,17 @@ const styles = StyleSheet.create({
     // borderWidth: 3,
     // borderColor: Colors.quaternary,
     // overflow: 'hidden',
-    marginHorizontal: Dimensions.get('window').width / 5.5,
-    marginVertical: Dimensions.get('window').height / 30,
   },
   image: {
     width: '100%',
     height: '100%',
   },
-  button:{
-   width:'100',
-   flexDirection: "row",
+  button: {
+    width: '100',
+    flexDirection: "row",
     justifyContent: 'space-around',
-    alignItems:'center',
-    justifyContent:"center"
+    alignItems: 'center',
+    justifyContent: "center"
 
   },
 });
