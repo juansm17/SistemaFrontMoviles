@@ -1952,10 +1952,10 @@
   dependencies:
     "invariant" "^2.2.4"
 
-"@react-native-picker/picker@^1.8.3":
-  "integrity" "sha512-IYfMXdUsfQe4RBLJPZq6GoPkr2otOTZqej/gU93x+oIjrR+UCcCb0fsqmXHT8qX29E+0cEQZd/4bWnzbICHNrg=="
-  "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-1.16.5.tgz"
-  "version" "1.16.5"
+"@react-native-picker/picker@^2.2.1":
+  "integrity" "sha512-EC7yv22QLHlTfnbC1ez9IUdXTOh1W31x96Oir0PfskSGFFJMWWdLTg4VrcE2DsGLzbfjjkBk123c173vf2a5MQ=="
+  "resolved" "https://registry.npmjs.org/@react-native-picker/picker/-/picker-2.2.1.tgz"
+  "version" "2.2.1"
 
 "@react-navigation/core@^3.7.9":
   "integrity" "sha512-EknbzM8OI9A5alRxXtQRV5Awle68B+z1QAxNty5DxmlS3BNfmduWNGnim159ROyqxkuDffK9L/U/Tbd45mx+Jg=="
@@ -5815,14 +5815,6 @@
     "hoist-non-react-statics" "^3.3.0"
     "invariant" "^2.2.4"
     "prop-types" "^15.7.2"
-
-"react-native-picker-select@^8.0.4":
-  "integrity" "sha512-orBjPIwBkV5oipyVw263YNMI56f6Kj3p/ejabZoCYYNSG3AiLVVhC2RqsxMgDA7IayyURAW+AlV+mDJyVqLBkg=="
-  "resolved" "https://registry.npmjs.org/react-native-picker-select/-/react-native-picker-select-8.0.4.tgz"
-  "version" "8.0.4"
-  dependencies:
-    "@react-native-picker/picker" "^1.8.3"
-    "lodash.isequal" "^4.5.0"
 
 "react-native-ratings@8.0.4":
   "integrity" "sha512-Xczu5lskIIRD6BEdz9A0jDRpEck/SFxRqiglkXi0u67yAtI1/pcJC76P4MukCbT8K4BPVl+42w83YqXBoBRl7A=="

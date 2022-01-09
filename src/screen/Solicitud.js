@@ -3,92 +3,27 @@ import {
   View,
   Text,
   TextInput,
-  ToastAndroid,
-  TouchableOpacity,
-  Alert,
-  ActivityIndicator,
   ScrollView,
   Image,
   Dimensions,
   TouchableWithoutFeedback,
   StyleSheet,
   Keyboard,
-  Button
+  Button,
+  ToastAndroid
 } from 'react-native';
+import { signUpStyles } from '../styles/signUp';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNPickerSelect from 'react-native-picker-select';
-
-import Field from '../services/Field';
-import Http from '../services/Http';
-
 import { solicitudStyles } from '../styles/Solicitud'
-import MainButton from '../components/MainButton';
 import Loading from '../components/Loading';
-
-import Colors from '../constants/color';
 import axios from 'axios';
-
+import { Picker } from '@react-native-picker/picker';
 
 const Solicitud = ({ navigation }) => {
   const [documentType, setDocumentType] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [idUser, setIdUser] = React.useState('');
   const [loading, setLoading] = useState(false);
-
-  let passInput = '';
-  let emailInput = '';
-
-  const submitSolicitud = async () => {
-    setLoading(true);
-    if (
-      !Field.checkFields([
-
-      ])
-    ) {
-      Alert.alert('Empty Field', 'Please, fill the fields');
-    } else {
-      const data = await Http.send('POST', '/api/users/signup', solicitud);
-
-      if (!data) {
-        Alert.alert('Fatal Error', 'No data from server...');
-      } else {
-        switch (data.typeResponse) {
-          case 'Success':
-            await AsyncStorage.setItem(
-              'user',
-              JSON.stringify({
-                tipo_documento: solicitud.tipo_documento,
-                descripcion: solicitud.descripcion,
-                fecha: solicitud.fecha,
-                id: data.body.id,
-              })
-            );
-            navigation.navigate('Solicitud', {
-              email: user.email,
-              name: user.name,
-              id: data.body.id,
-            });
-            break;
-
-          case 'Fail':
-            data.body.errors.forEach((element) => {
-              ToastAndroid.showWithGravity(
-                element.text,
-                ToastAndroid.SHORT,
-                ToastAndroid.TOP
-              );
-            });
-            break;
-
-          default:
-            Alert.alert(data.typeResponse, data.message);
-            break;
-        }
-      }
-    }
-
-    setLoading(false);
-  };
 
   const getUser = async () => {
     return await AsyncStorage.getItem('user');
@@ -101,18 +36,20 @@ const Solicitud = ({ navigation }) => {
   const createRequest = async () => {
     try {
       setLoading(true);
-      await axios.post('https://tesis-app-server.herokuapp.com/request', {
+      const res = await axios.post('https://tesis-app-server.herokuapp.com/request', {
         documentType,
         description,
         idUser,
       });
       setDocumentType('');
       setDescription('');
+      console.log(res.data);
       setTimeout(() => {
         setLoading(false)
       }, 1000);
     } catch (e) {
-      console.log(e.response.data.error);
+      console.log(e.response.data);
+      setLoading(false);
     }
   }
 
@@ -131,26 +68,32 @@ const Solicitud = ({ navigation }) => {
             />
           </View>
           <Text style={solicitudStyles.title}>Ingresar Solicitud</Text>
-          <View>
-            <View style={solicitudStyles.section}>
-              <RNPickerSelect
-                onValueChange={(v) => setDocumentType(v)}
-                items={[
-                  { label: 'CONSTANCIA', value: 'CONSTANCIA' },
-                  { label: 'CERTIFICADO', value: 'CERTIFICADO' }
-                ]}
-              />
-            </View>
-            <View style={solicitudStyles.section}>
-              <TextInput style={solicitudStyles.textAreaContainer}
-                placeholder="Descripción"
-                blurOnSubmit={false}
-                style={solicitudStyles.textInput}
-                autoFocus
-                value={description}
-                onChangeText={(v) => setDescription(v)}
-              />
-            </View>
+          <Picker
+            style={{
+              ...signUpStyles.textInput, marginVertical: 10, height: 50, borderColor: 'gray',
+              backgroundColor: 'white', color: 'gray', borderRadius: 5
+            }}
+            selectedValue={documentType}
+            onValueChange={(value) =>
+              setDocumentType(value)
+            }>
+            <Picker.Item label="Constancia" value='CONSTANCIA' />
+            <Picker.Item label="Certificado" value='CERTIFICADO' />
+          </Picker>
+          <View style={{
+            ...solicitudStyles.section, marginVertical: 10
+          }}>
+            <TextInput
+              placeholder="Descripción"
+              blurOnSubmit={false}
+              style={{
+                ...solicitudStyles.textInput, marginVertical: 10, height: 50, borderColor: 'gray',
+                backgroundColor: 'white', color: 'gray', borderRadius: 5
+              }}
+              autoFocus
+              value={description}
+              onChangeText={(v) => setDescription(v)}
+            />
           </View>
           <View>
             {
@@ -161,7 +104,7 @@ const Solicitud = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-    </TouchableWithoutFeedback>
+    </TouchableWithoutFeedback >
   );
 };
 
@@ -172,10 +115,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: Dimensions.get('window').width * 0.5,
     height: Dimensions.get('window').width * 0.5,
-    // borderRadius: (Dimensions.get('window').width * 0.5) / 2,
-    // borderWidth: 3,
-    // borderColor: Colors.quaternary,
-    // overflow: 'hidden',
     marginHorizontal: Dimensions.get('window').width / 5.5,
     marginVertical: Dimensions.get('window').height / 30,
   },
@@ -189,7 +128,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     justifyContent: "center"
-
   },
 });
 

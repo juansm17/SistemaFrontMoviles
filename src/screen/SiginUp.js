@@ -3,29 +3,20 @@ import {
   View,
   Text,
   TextInput,
-  ToastAndroid,
   TouchableOpacity,
-  Alert,
   ScrollView,
   Image,
   Dimensions,
   TouchableWithoutFeedback,
   StyleSheet,
   Keyboard,
-  Pressable,
-  Button
+  Button,
+  ToastAndroid
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNPickerSelect from 'react-native-picker-select';
-
+import { Picker } from '@react-native-picker/picker';
 import { Icon } from 'react-native-elements';
-
-import Field from '../services/Field';
-import Http from '../services/Http';
 import Loading from '../components/Loading';
-
 import { signUpStyles } from '../styles/signUp';
-import MainButton from '../components/MainButton';
 import Colors from '../constants/color';
 import axios from 'axios';
 
@@ -36,66 +27,6 @@ const SignUp = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [admin, setAdmin] = useState(false);
-
-  let passInput = '';
-  let pass2Input = '';
-  let emailInput = '';
-
-  const submitSignUp = async () => {
-    setLoading(true);
-    if (
-      !Field.checkFields([
-        user.email,
-        user.password,
-        user.ci,
-        user.perfil,
-        user.nombre,
-        user.confirmPassword,
-      ])
-    ) {
-      Alert.alert('Empty Field', 'Please, fill the fields');
-    } else {
-      const data = await Http.send('POST', '/api/users/signup', user);
-
-      if (!data) {
-        Alert.alert('Fatal Error', 'No data from server...');
-      } else {
-        switch (data.typeResponse) {
-          case 'Success':
-            await AsyncStorage.setItem(
-              'user',
-              JSON.stringify({
-                email: user.email,
-                name: user.nombre,
-                id: data.body.id,
-              })
-            );
-            navigation.navigate('Solicitud', {
-              email: user.email,
-              name: user.name,
-              id: data.body.id,
-            });
-            break;
-
-          case 'Fail':
-            data.body.errors.forEach((element) => {
-              ToastAndroid.showWithGravity(
-                element.text,
-                ToastAndroid.SHORT,
-                ToastAndroid.TOP
-              );
-            });
-            break;
-
-          default:
-            Alert.alert(data.typeResponse, data.message);
-            break;
-        }
-      }
-    }
-
-    setLoading(false);
-  };
 
   const signUp = async () => {
     try {
@@ -112,13 +43,14 @@ const SignUp = ({ navigation }) => {
       setEmail('');
       setPassword('');
       setAdmin('');
-      console.log(res.data.message);
+      console.log(res.data);
       setTimeout(() => {
         setLoading(false);
         navigation.navigate('SignIn');
       }, 1000);
     } catch (e) {
-      console.log(e.response.data.error);
+      console.log(e.response.data);
+      setLoading(false);
     }
   };
 
@@ -153,7 +85,6 @@ const SignUp = ({ navigation }) => {
             <View style={signUpStyles.section}>
               <Icon name="wallet-outline" color="gray" type="ionicon" size={20} />
               <TextInput
-                // ref={(input)=>(ciInput=input)}
                 placeholder="Cédula de identidad"
                 blurOnSubmit={false}
                 style={signUpStyles.textInput}
@@ -165,7 +96,6 @@ const SignUp = ({ navigation }) => {
             <View style={signUpStyles.section}>
               <Icon name="mail-outline" color="gray" type="ionicon" size={20} />
               <TextInput
-                //  ref={(input) => (perfilInput = input)}
                 placeholder="Email"
                 autoCapitalize="none"
                 keyboardType={'email-address'}
@@ -183,7 +113,6 @@ const SignUp = ({ navigation }) => {
                 size={20}
               />
               <TextInput
-                //  ref={(input) => (passInput = input)}
                 placeholder="Password"
                 autoCapitalize="none"
                 blurOnSubmit={false}
@@ -194,15 +123,18 @@ const SignUp = ({ navigation }) => {
                 onSubmitEditing={() => pass2Input.focus()}
               />
             </View>
-            <View style={signUpStyles.section}>
-              <RNPickerSelect
-                onValueChange={(value) => setAdmin(value)}
-                items={[
-                  { label: 'Estudiante', value: true },
-                  { label: 'Control de estudio', value: false },
-                ]}
-              />
-            </View>
+            <Picker
+              style={{
+                ...signUpStyles.textInput, marginVertical: 10, height: 50, borderColor: 'gray',
+                backgroundColor: 'white', color: 'gray', borderRadius: 5
+              }}
+              selectedValue={admin}
+              onValueChange={(value) =>
+                setAdmin(value)
+              }>
+              <Picker.Item label="Estudiante" value={true} />
+              <Picker.Item label="Control de estudio" value={false} />
+            </Picker>
           </View>
           {
             loading &&
@@ -235,10 +167,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: Dimensions.get('window').width * 0.5,
     height: Dimensions.get('window').width * 0.5,
-    // borderRadius: (Dimensions.get('window').width * 0.5) / 2,
-    // borderWidth: 3,
-    // borderColor: Colors.quaternary,
-    // overflow: 'hidden',
     marginHorizontal: Dimensions.get('window').width / 5.5,
     marginVertical: Dimensions.get('window').height / 30,
   },
@@ -252,7 +180,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     justifyContent: "center"
-
   },
 });
 
