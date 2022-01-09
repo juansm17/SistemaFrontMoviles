@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,7 +6,6 @@ import {
   ToastAndroid,
   TouchableOpacity,
   Alert,
-  ActivityIndicator,
   ScrollView,
   Image,
   Dimensions,
@@ -149,7 +148,6 @@ const SignUp = ({ navigation }) => {
                 autoFocus
                 value={name}
                 onChangeText={(v) => setName(v)}
-                onSubmitEditing={() => emailInput.focus()}
               />
             </View>
             <View style={signUpStyles.section}>
@@ -162,7 +160,6 @@ const SignUp = ({ navigation }) => {
                 autoFocus
                 value={document}
                 onChangeText={(v) => setDocument(v)}
-                onSubmitEditing={() => passInput.focus()}
               />
             </View>
             <View style={signUpStyles.section}>
@@ -176,7 +173,6 @@ const SignUp = ({ navigation }) => {
                 style={signUpStyles.textInput}
                 value={email}
                 onChangeText={(v) => setEmail(v)}
-                onSubmitEditing={() => passInput.focus()}
               />
             </View>
             <View style={signUpStyles.section}>
@@ -200,11 +196,10 @@ const SignUp = ({ navigation }) => {
             </View>
             <View style={signUpStyles.section}>
               <RNPickerSelect
-                value={admin}
                 onValueChange={(value) => setAdmin(value)}
                 items={[
-                  { label: 'Estudiante', value: false },
-                  { label: 'Control de Estudio', value: true },
+                  { label: 'Estudiante', value: true },
+                  { label: 'Control de estudio', value: false },
                 ]}
               />
             </View>
@@ -244,6 +239,8 @@ const styles = StyleSheet.create({
     // borderWidth: 3,
     // borderColor: Colors.quaternary,
     // overflow: 'hidden',
+    marginHorizontal: Dimensions.get('window').width / 5.5,
+    marginVertical: Dimensions.get('window').height / 30,
   },
   image: {
     width: '100%',

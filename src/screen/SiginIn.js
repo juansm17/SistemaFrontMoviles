@@ -25,6 +25,7 @@ import { signInStyles } from '../styles/signIn';
 import Colors from '../constants/color';
 import MainButton from '../components/MainButton';
 import axios from 'axios';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const SignIn = ({ navigation }) => {
   const [document, setDocument] = React.useState('');
@@ -97,89 +98,91 @@ const SignIn = ({ navigation }) => {
         Keyboard.dismiss();
       }}
     >
-      <View style={signInStyles.container}>
-        <View style={styles.imageContainer}>
-          <Image
-            style={styles.image}
-            source={require('../../assets/logo.jpg')}
-          />
-        </View>
-        <Text style={signInStyles.title}>Ingresar</Text>
-        <Text style={signInStyles.subtitle}>Bienvendido a  SDGPE!</Text>
-        <View>
-          <View style={signInStyles.section}>
-            <Icon name="wallet-outline" color="gray" type="ionicon" size={20} />
-            <TextInput
-              placeholder="Cédula de identidad"
-              autoCapitalize="none"
-              blurOnSubmit={false}
-              style={signInStyles.textInput}
-              autoFocus
-              value={document}
-              onChangeText={(v) => setDocument(v)}
-              onSubmitEditing={() => document.focus()}
+      <ScrollView>
+        <View style={signInStyles.container}>
+          <View style={styles.imageContainer}>
+            <Image
+              style={styles.image}
+              source={require('../../assets/logo.jpg')}
             />
           </View>
-          <View style={signInStyles.section}>
-            <Icon name="mail-outline" color="gray" type="ionicon" size={20} />
-            <TextInput
-              //  ref={(input) => (perfilInput = input)}
-              placeholder="Email"
-              autoCapitalize="none"
-              keyboardType={'email-address'}
-              blurOnSubmit={false}
-              style={signInStyles.textInput}
-              value={email}
-              onChangeText={(v) => setEmail(v)}
-              onSubmitEditing={() => email.focus()}
-            />
+          <Text style={signInStyles.title}>Ingresar</Text>
+          <Text style={signInStyles.subtitle}>Bienvendido a  SDGPE!</Text>
+          <View>
+            <View style={signInStyles.section}>
+              <Icon name="wallet-outline" color="gray" type="ionicon" size={20} />
+              <TextInput
+                placeholder="Cédula de identidad"
+                autoCapitalize="none"
+                blurOnSubmit={false}
+                style={signInStyles.textInput}
+                autoFocus
+                value={document}
+                onChangeText={(v) => setDocument(v)}
+                onSubmitEditing={() => document.focus()}
+              />
+            </View>
+            <View style={signInStyles.section}>
+              <Icon name="mail-outline" color="gray" type="ionicon" size={20} />
+              <TextInput
+                //  ref={(input) => (perfilInput = input)}
+                placeholder="Email"
+                autoCapitalize="none"
+                keyboardType={'email-address'}
+                blurOnSubmit={false}
+                style={signInStyles.textInput}
+                value={email}
+                onChangeText={(v) => setEmail(v)}
+                onSubmitEditing={() => email.focus()}
+              />
+            </View>
+            <View style={signInStyles.section}>
+              <Icon
+                name="lock-closed-outline"
+                color="gray"
+                type="ionicon"
+                size={20}
+              />
+              <TextInput
+                //ref={(input) => (emailInput = input)}
+                placeholder="password"
+                autoCapitalize="none"
+                style={signInStyles.textInput}
+                secureTextEntry
+                value={password}
+                onChangeText={(v) => setPassword(v)}
+              />
+            </View>
           </View>
-          <View style={signInStyles.section}>
-            <Icon
-              name="lock-closed-outline"
-              color="gray"
-              type="ionicon"
-              size={20}
-            />
-            <TextInput
-              //ref={(input) => (emailInput = input)}
-              placeholder="password"
-              autoCapitalize="none"
-              style={signInStyles.textInput}
-              secureTextEntry
-              value={password}
-              onChangeText={(v) => setPassword(v)}
-            />
-          </View>
-        </View>
 
-        {
-          loading &&
-          <Loading />
-        }
+          {
+            loading &&
+            <Loading />
+          }
 
-        <MainButton onPress={signIn}>Iniciar sesión</MainButton>
-        {/* <TouchableOpacity onPress={submitSignIn} style={signInStyles.signIn}>
+          <MainButton onPress={signIn}>Iniciar sesión</MainButton>
+          {/* <TouchableOpacity onPress={submitSignIn} style={signInStyles.signIn}>
           {loading ? (
             <ActivityIndicator size="small" color="#00ff00" />
           ) : (
             <Text style={signInStyles.textSignIn}>Sign In</Text>
           )}
         </TouchableOpacity> */}
-        <View style={signInStyles.signUp}>
-          <Text style={signInStyles.textSignUp}>No tiene cuenta?</Text>
-          <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-            <Text
-              style={[
-                signInStyles.textSignUp,
-                { color: Colors.quinary, marginLeft: 3 },
-              ]}
-            >
-              Crear Usuario
-            </Text>
-          </TouchableOpacity>
+          <View style={signInStyles.signUp}>
+            <Text style={signInStyles.textSignUp}>No tiene cuenta?</Text>
+            <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
+              <Text
+                style={[
+                  signInStyles.textSignUp,
+                  { color: Colors.quinary, marginLeft: 3 },
+                ]}
+              >
+                Crear Usuario
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      </ScrollView>
     </TouchableWithoutFeedback>
   );
 };
