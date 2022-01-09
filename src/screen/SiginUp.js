@@ -11,7 +11,7 @@ import {
   StyleSheet,
   Keyboard,
   Button,
-  ToastAndroid
+  Alert,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Icon } from 'react-native-elements';
@@ -43,13 +43,13 @@ const SignUp = ({ navigation }) => {
       setEmail('');
       setPassword('');
       setAdmin('');
-      console.log(res.data);
       setTimeout(() => {
+        Alert.alert(res.data.message);
         setLoading(false);
         navigation.navigate('SignIn');
       }, 1000);
     } catch (e) {
-      console.log(e.response.data);
+      Alert.alert(e.response.data.message);
       setLoading(false);
     }
   };

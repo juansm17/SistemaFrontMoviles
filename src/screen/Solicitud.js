@@ -10,8 +10,9 @@ import {
   StyleSheet,
   Keyboard,
   Button,
-  ToastAndroid
+  Alert,
 } from 'react-native';
+import { Icon } from 'react-native-elements';
 import { signUpStyles } from '../styles/signUp';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { solicitudStyles } from '../styles/Solicitud'
@@ -43,12 +44,12 @@ const Solicitud = ({ navigation }) => {
       });
       setDocumentType('');
       setDescription('');
-      console.log(res.data);
       setTimeout(() => {
-        setLoading(false)
+        Alert.alert(res.data.message);
+        setLoading(false);
       }, 1000);
     } catch (e) {
-      console.log(e.response.data);
+      Alert.alert(e.response.data.message);
       setLoading(false);
     }
   }
@@ -61,6 +62,23 @@ const Solicitud = ({ navigation }) => {
     >
       <ScrollView>
         <View style={solicitudStyles.container}>
+          <Icon
+            containerStyle={{
+              marginHorizontal: 15,
+              padding: 1,
+              width: Dimensions.get('window').width / 11.5,
+              height: Dimensions.get('window').height / 21,
+              backgroundColor: '#d4223f',
+              alignSelf: 'flex-end',
+              borderRadius: 1000
+            }}
+            name='log-out'
+            size={22}
+            color='white'
+            type='feather'
+            style={{ padding: 1, margin: 2 }}
+            onPress={() => navigation.navigate('SignIn')}
+          />
           <View style={styles.imageContainer}>
             <Image
               style={styles.image}

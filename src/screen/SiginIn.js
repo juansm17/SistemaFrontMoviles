@@ -9,6 +9,7 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../components/Loading';
@@ -39,12 +40,12 @@ const SignIn = ({ navigation }) => {
       await AsyncStorage.setItem('token', res.data.token);
       await AsyncStorage.setItem('user', JSON.stringify(res.data.user));
       setTimeout(() => {
+        Alert.alert(res.data.message);
         setLoading(false);
         navigation.navigate('Solicitud');
       }, 1000);
-      console.log(res.data);
     } catch (e) {
-      console.log(e.response.data);
+      Alert.alert(e.response.data.error);
       setLoading(false);
     }
   }
